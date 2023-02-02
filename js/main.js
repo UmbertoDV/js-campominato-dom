@@ -39,7 +39,7 @@ function generaGriglia(grid, difficoltà) {
 	grid.innerHTML = "";
 	for (let i = 0; i < difficoltà; i++) {
 		const testoCella = i + 1;
-		const cellaEl = generaBloccoPiccolo(testoCella);
+		const cellaEl = generaBloccoPiccolo(testoCella, difficoltà);
 		grid.append(cellaEl);
 	}
 }
@@ -50,12 +50,20 @@ function generaGriglia(grid, difficoltà) {
  * @param {string} testo
  * @return {HTMLElement}
  */
-function generaBloccoPiccolo(testo) {
+function generaBloccoPiccolo(testo, difficoltà) {
 	const bloccoPiccolo = document.createElement("div");
-	bloccoPiccolo.classList.add("square");
+	if (difficoltà == 81) {
+		bloccoPiccolo.classList.add("blocco-piccolo-medium");
+	} else if (difficoltà == 49) {
+		bloccoPiccolo.classList.add("blocco-piccolo-hard");
+	} else {
+		bloccoPiccolo.classList.add("blocco-piccolo");
+	}
 	bloccoPiccolo.innerHTML = testo;
+
 	bloccoPiccolo.addEventListener("click", function () {
-		console.log(this.innerHTML);
+		console.log(testo);
+		this.classList.toggle("active");
 	});
 
 	return bloccoPiccolo;
@@ -72,37 +80,3 @@ function generaNumeroCasuale(min, max) {
 	const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
 	return randomNumber;
 }
-
-// /**
-//  * Funzione che genera la la griglia dentro il blocco grande.
-//  *
-//  * @param {} griglia Elemento griglia cioè il blocco grande.
-//  * @param {} dimensione Quanti quadrati contiene il blocco grande.
-//  *
-//  */
-// function generaGriglia(griglia, dimensione) {
-// 	const whitelist = [];
-// 	for (let i = 0; i < dimensione; i++) {
-// 		whitelist.push(i + 1);
-// 	}
-
-// 	for (let i = 0; i < dimensione; i++) {
-// 		const numeroIndex = 0;
-// 		// const randomIndex = generaNumeroCasuale(0, whitelist.length - 1);
-// 		const valoreBloccoPiccolo = whitelist[numeroIndex];
-
-// 		whitelist.splice(numeroIndex, 1);
-
-// 		const bloccoPiccoloEl = document.createElement("div");
-
-// 		bloccoPiccoloEl.append(valoreBloccoPiccolo);
-
-// 		bloccoPiccoloEl.classList.add("blocco-piccolo");
-// 		griglia.append(bloccoPiccoloEl);
-
-// 		bloccoPiccoloEl.addEventListener("click", function () {
-// 			this.classList.toggle("active");
-// 			console.log(valoreBloccoPiccolo);
-// 		});
-// 	}
-// }
