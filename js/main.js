@@ -8,7 +8,7 @@
 ("use strict");
 const startGameButton = document.getElementById("start-button");
 const selectDifficoltà = document.getElementById("difficulty");
-const dimensioneGriglia = 100;
+let bombe;
 
 //    _____          _         ____          _                     _
 //   / ____|        | |       / __ \        | |                   | |
@@ -20,6 +20,7 @@ const dimensioneGriglia = 100;
 startGameButton.addEventListener("click", function () {
 	const grigliaEl = document.querySelector(".blocco-grande");
 	const difficoltà = parseInt(selectDifficoltà.value);
+
 	generaGriglia(grigliaEl, difficoltà);
 });
 
@@ -42,6 +43,9 @@ function generaGriglia(grid, difficoltà) {
 		const cellaEl = generaBloccoPiccolo(testoCella, difficoltà);
 		grid.append(cellaEl);
 	}
+
+	bombe = generaBombe(1, difficoltà);
+	console.log(bombe);
 }
 
 /**
@@ -52,6 +56,8 @@ function generaGriglia(grid, difficoltà) {
  */
 function generaBloccoPiccolo(testo, difficoltà) {
 	const bloccoPiccolo = document.createElement("div");
+	const activeSquares = document.querySelectorAll(".blocco-piccolo.active");
+
 	if (difficoltà == 81) {
 		bloccoPiccolo.classList.add("blocco-piccolo-medium");
 	} else if (difficoltà == 49) {
@@ -59,15 +65,28 @@ function generaBloccoPiccolo(testo, difficoltà) {
 	} else {
 		bloccoPiccolo.classList.add("blocco-piccolo");
 	}
-	bloccoPiccolo.innerHTML = testo;
+
+	// bloccoPiccolo.innerHTML = testo;
+	bloccoPiccolo.setAttribute("data-index", testo);
 
 	bloccoPiccolo.addEventListener("click", function () {
-		console.log(testo);
-		this.classList.toggle("active");
+		const indexBloccoPiccolo = parseInt(this.getAttribute("data-index"));
+
+		if (bombe.includes(indexBloccoPiccolo)) {
+			this.classList.add("bomb");
+			gameOver(activeSquares, false);
+		} else {
+			this.classList.add("active");
+		}
+
+		if (difficoltà - bombe.length == activeSquares.length) {
+			gameOver(activeSquares, true);
+		}
 	});
 
 	return bloccoPiccolo;
 }
+
 /**
  * Funzione che genere un numero random fra 2 valori (valori inclusi).
  *
@@ -79,4 +98,37 @@ function generaBloccoPiccolo(testo, difficoltà) {
 function generaNumeroCasuale(min, max) {
 	const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
 	return randomNumber;
+}
+
+/**
+ * Funzione che genera un array con 16 "bombe" (interi) in un range.
+ *
+ * @param {int} min
+ * @param {int} max
+ * @returns {int[]}
+ *
+ */
+function generaBombe(min, max) {
+	const arrayBombe = [];
+
+	while (arrayBombe.length < 16) {
+		const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
+		if (!arrayBombe.includes(randomNumber)) {
+			arrayBombe.push(randomNumber);
+		}
+	}
+
+	return arrayBombe;
+}
+
+/**
+ * Funzione termina il gioco.
+ *
+ */
+function gameOver(blocchiAttivi, gameWon) {
+	if (gameWon) {
+		alert(`Hai VINTO con ${blocchiAttivi.length} punti`);
+	} else {
+		alert(`Hai PERSO con ${blocchiAttivi.length} punti`);
+	}
 }
